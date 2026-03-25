@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solanas CRM — Punta del Este</title>
+<style>
+  /* ── RESET & BASE ── */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;font-size:14px}
+  :root{
+    --bg:#ffffff;--bg2:#f5f5f0;--bg3:#eeede8;
+    --text:#1a1a1a;--text2:#6b6b6b;--text3:#9b9b9b;
+    --border:#e0dfd8;--border2:#c8c7c0;
+    --radius:8px;--radius-lg:12px;
+    --uy-bg:#E1F5EE;--uy:#085041;
+    --ar-bg:#E6F1FB;--ar:#0C447C;
+    --admin-bg:#FAECE7;--admin:#712B13;
+  }
+
+  /* ── LAYOUT ── */
+  .app{display:flex;height:100vh;overflow:hidden}
+  .sidebar{width:200px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+  .content{flex:1;overflow-y:auto;padding:20px}
+
+  /* ── SIDEBAR ── */
+  .logo{padding:16px;border-bottom:1px solid var(--border)}
+  .logo-t{font-size:14px;font-weight:600;color:var(--text)}
+  .logo-s{font-size:11px;color:var(--text3);margin-top:2px}
+  .user-blk{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;cursor:pointer}
+  .user-blk:hover{background:var(--bg)}
+  .nav-sec{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);padding:10px 14px 3px;font-weight:600}
+  .nav-i{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;cursor:pointer;color:var(--text2);transition:background .12s;border-right:2px solid transparent}
+  .nav-i:hover{background:var(--bg);color:var(--text)}
+  .nav-i.active{background:var(--bg);color:var(--text);font-weight:600;border-right-color:var(--text)}
+  .nav-badge{background:#E24B4A;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:20px;margin-left:auto}
+
+  /* ── TOPBAR ── */
+  .topbar{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);flex-shrink:0}
+  .topbar-t{font-size:15px;font-weight:600;color:var(--text)}
+
+  /* ── BUTTONS ── */
+  .btn{font-size:12px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;cursor:pointer;color:var(--text);font-family:inherit;transition:background .12s}
+  .btn:hover{background:var(--bg2)}
+  .btn-p{background:var(--text);color:#fff;border-color:var(--text)}
+  .btn-p:hover{opacity:.85}
+  .btn-wa{background:#128C7E;color:#fff;border-color:#128C7E;font-size:11px;padding:4px 9px}
+  .btn-wa:hover{background:#0f7a6d}
+  .btn-mail{background:#185FA5;color:#fff;border-color:#185FA5;font-size:11px;padding:4px 9px}
+  .btn-danger{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
+
+  /* ── CARDS & METRICS ── */
+  .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+  .card-t{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:10px}
+  .metrics-g{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .mc{background:var(--bg2);border-radius:var(--radius);padding:12px}
+  .mc-l{font-size:10px;color:var(--text2);margin-bottom:3px}
+  .mc-v{font-size:22px;font-weight:700;color:var(--text)}
+  .mc-s{font-size:10px;color:var(--text3);margin-top:2px}
+
+  /* ── PILLS & TAGS ── */
+  .pill{display:inline-flex;align-items:center;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .pill-uy{background:var(--uy-bg);color:var(--uy)}
+  .pill-ar{background:var(--ar-bg);color:var(--ar)}
+  .pill-admin{background:var(--admin-bg);color:var(--admin)}
+  .pill-lider{background:#EEEDFE;color:#3C3489}
+  .pill-vend{background:#F1EFE8;color:#444441}
+  .tag{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+  .tag-hot{background:#FAECE7;color:#712B13}
+  .tag-warm{background:#FAEEDA;color:#633806}
+  .tag-cold{background:#E6F1FB;color:#0C447C}
+  .tag-hab{background:#EAF3DE;color:#27500A}
+  .tag-prod{background:#EEEDFE;color:#3C3489}
+  .tag-orig{background:#F1EFE8;color:#444441}
+
+  /* ── PIPELINE ── */
+  .pipe-wrap{overflow-x:auto;padding-bottom:8px}
+  .pipeline{display:flex;gap:10px;min-width:max-content}
+  .s-col{width:150px;flex-shrink:0;display:flex;flex-direction:column;gap:7px}
+  .s-hdr{padding:7px 9px;border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between}
+  .lcard{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:border-color .13s,box-shadow .13s}
+  .lcard:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .lc-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .lc-sub{font-size:10px;color:var(--text2);margin-bottom:5px}
+
+  /* ── FORM FIELDS ── */
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+  .field input,.field select,.field textarea{font-size:12px;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-family:inherit}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#888}
+  .form-g{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:580px}
+  .full{grid-column:1/-1}
+
+  /* ── DETAIL ── */
+  .back{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:14px}
+  .back:hover{color:var(--text)}
+  .avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+  .irow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+  .irow:last-child{border-bottom:none}
+  .il{color:var(--text2)}
+  .iv{color:var(--text);font-weight:600;font-size:11px;text-align:right;max-width:60%;overflow:hidden;text-overflow:ellipsis}
+  .stage-btns{display:flex;flex-wrap:wrap;gap:5px}
+  .sb{font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--text2);font-family:inherit}
+  .sb:hover{border-color:var(--border2);color:var(--text)}
+  .sb.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .tl-item{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px}
+  .tl-item:last-child{border-bottom:none}
+  .tl-dot{width:7px;height:7px;border-radius:50%;margin-top:3px;flex-shrink:0;background:var(--border2)}
+  .note-in{width:100%;font-size:12px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);resize:none;font-family:inherit}
+  .note-in:focus{outline:none;border-color:#888}
+
+  /* ── MENSAJES ── */
+  .chat-wrap{display:flex;gap:12px;height:560px}
+  .chat-sidebar{width:200px;flex-shrink:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow-y:auto;background:var(--bg)}
+  .chat-main{flex:1;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
+  .chat-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg2)}
+  .bubble{max-width:75%;padding:8px 12px;border-radius:var(--radius-lg);font-size:12px;line-height:1.5}
+  .b-in{background:var(--bg);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
+  .b-wa{background:#128C7E;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .b-mail{background:#185FA5;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .b-time{font-size:9px;opacity:.65;margin-top:3px}
+  .chat-inp-wrap{padding:10px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:flex-end;flex-shrink:0;background:var(--bg)}
+  .contact-item{padding:10px;border-bottom:1px solid var(--border);cursor:pointer}
+  .contact-item:hover,.contact-item.active{background:var(--bg2)}
+
+  /* ── RECORDATORIOS ── */
+  .rem-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:11px;display:flex;align-items:flex-start;gap:10px;margin-bottom:7px}
+  .rem-item.overdue{border-left:3px solid #E24B4A;border-radius:0 var(--radius) var(--radius) 0}
+  .rem-item.today{border-left:3px solid #EF9F27;border-radius:0 var(--radius) var(--radius) 0}
+  .rem-item.done{opacity:.4}
+
+  /* ── AUTOMATIZACIONES ── */
+  .auto-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:8px}
+  .toggle{width:36px;height:20px;border-radius:20px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+  .toggle.on{background:#128C7E}
+  .toggle.off{background:var(--border2)}
+  .toggle-dot{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;transition:left .2s}
+  .toggle.on .toggle-dot{left:18px}
+  .toggle.off .toggle-dot{left:2px}
+  .pending-item{background:#FAEEDA;border:1px solid #EF9F27;border-radius:var(--radius);padding:11px;margin-bottom:8px}
+
+  /* ── PLANTILLAS ── */
+  .tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tpl-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+  .tpl-preview{font-size:11px;color:var(--text2);background:var(--bg2);padding:8px;border-radius:var(--radius);line-height:1.5;margin-bottom:10px;white-space:pre-wrap}
+  .var-tag{background:#EEEDFE;color:#3C3489;font-size:10px;padding:1px 5px;border-radius:3px;font-family:monospace}
+
+  /* ── LOGIN ── */
+  .login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:var(--bg2);padding:24px}
+  .login-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;max-width:360px;margin-bottom:8px;transition:border-color .13s,box-shadow .13s}
+  .login-card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+
+  /* ── LOADING ── */
+  .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:var(--text2);gap:12px}
+  .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .alert-banner{padding:10px 14px;border-radius:var(--radius);margin-bottom:12px;font-size:12px;line-height:1.5}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  /* TABLAS */
+  .tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .tbl th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);padding:7px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--bg2)}
+  .tbl td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+  .tbl tr:hover td{background:var(--bg2)}
+  .sel{font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CONFIGURACIÓN — COMPLETAR DESPUÉS DEL DEPLOY
+// ════════════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE42XikEM3Ve0NrKPzLm9emAY3FEL9kLYGKG1ok-1H2yDByrqB0zKOVqa0NZFGL7Y/exec';
+// ════════════════════════════════════════════════════════════
+
+// ── DATOS FIJOS ──────────────────────────────────────────────
+const STAGES = {
+  nuevo:      {label:'Nuevo',               color:'#888780',bg:'#F1EFE8'},
+  contactado: {label:'Contactado',          color:'#185FA5',bg:'#E6F1FB'},
+  intento:    {label:'Intento de contacto', color:'#854F0B',bg:'#FAEEDA'},
+  interesado: {label:'Interesado',          color:'#534AB7',bg:'#EEEDFE'},
+  propuesta:  {label:'Propuesta enviada',   color:'#0F6E56',bg:'#E1F5EE'},
+  cierre:     {label:'Cierre pendiente',    color:'#993C1D',bg:'#FAECE7'},
+  futuro:     {label:'Contactar en futuro', color:'#993556',bg:'#FBEAF0'},
+  precio:     {label:'Fuera de precio',     color:'#A32D2D',bg:'#FCEBEB'},
+  dato:       {label:'Dato erróneo',        color:'#5F5E5A',bg:'#F1EFE8'},
+  venta:      {label:'Venta',               color:'#085041',bg:'#E1F5EE'},
+};
+
+const PRODUCTOS  = ['membresía','venta crystal','venta garden view','venta green park'];
+const HABITACIONES = ['suite','apartamento','estudio','garden view','green park','crystal'];
+const ORIGENES   = ['check-in','redes sociales','contacto personal','referido','campaña email','campaña whatsapp','feria / evento','web'];
+
+// Estado global
+let STATE = {
+  user: null,
+  users: [],
+  leads: [],
+  notes: {},      // leadId → [notas]
+  reminders: [],
+  conversations: {},
+  templates: [
+    {id:'t1',name:'Seguimiento post check-in',type:'wa',body:'Hola {{nombre}}, soy {{vendedor}} de Solanas Punta del Este. Bienvenido/a a {{habitacion}}! ¿Hay algo en lo que te pueda ayudar durante tu estadía?',stage:'nuevo'},
+    {id:'t2',name:'Propuesta de producto',type:'wa',body:'Hola {{nombre}}! Te comparto información sobre {{producto}}, una oportunidad única para disfrutar de Solanas cada año. ¿Cuándo tenés 10 minutos para charlar?',stage:'interesado'},
+    {id:'t3',name:'Recordatorio de cierre',type:'mail',body:'Estimado/a {{nombre}},\n\nQuería hacer un seguimiento de la propuesta para {{producto}}.\n\nQuedo a disposición para cualquier consulta.\n\nSaludos,\n{{vendedor}}\nSolanas Punta del Este',stage:'cierre'},
+    {id:'t4',name:'Felicitación por venta',type:'wa',body:'¡Felicitaciones {{nombre}}! Es un placer darte la bienvenida como nuevo socio de Solanas. En breve recibís toda la información de tu membresía.',stage:'venta'},
+    {id:'t5',name:'Propuesta por email',type:'mail',body:'Estimado/a {{nombre}},\n\nFue un placer conocerte en Solanas.\n\nAdjunto los detalles de {{producto}}, una oportunidad exclusiva para socios.\n\nSaludos,\n{{vendedor}}\nSolanas Punta del Este',stage:'propuesta'},
+  ],
+  automations: [
+    {id:'a1',name:'Bienvenida al check-in',on:true,trigger:'Lead nuevo por check-in',action:'Envía WhatsApp de bienvenida',template:'t1',canal:'wa',aprobacion:false,desc:'Se envía 30 min después del check-in'},
+    {id:'a2',name:'Propuesta al interesado',on:true,trigger:'Lead pasa a Interesado',action:'Envía WhatsApp de propuesta',template:'t2',canal:'wa',aprobacion:true,desc:'Requiere aprobación del vendedor'},
+    {id:'a3',name:'Seguimiento de cierre',on:true,trigger:'Cierre pendiente sin actividad 48hs',action:'Envía email de cierre',template:'t3',canal:'mail',aprobacion:true,desc:'Requiere aprobación del vendedor'},
+    {id:'a4',name:'Felicitación por venta',on:true,trigger:'Lead pasa a Venta',action:'Envía WhatsApp de felicitación',template:'t4',canal:'wa',aprobacion:false,desc:'Se envía automáticamente'},
+  ],
+  pendingApprovals: [],
+  view: 'dash',
+  selected: null,
+  activeChat: null,
+  editTpl: null,
+  loading: false,
+  filterHab: 'todos',
+  filterEq: 'todos',
+  searchQ: '',
+  page: 0,
+};
+
+// ── HELPERS ──────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const ini = name => (name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const S = id => STAGES[id] || STAGES.nuevo;
+const uObj = id => STATE.users.find(u=>u.id===id);
+
+function myLeads() {
+  if (!STATE.user) return STATE.leads;
+  const u = STATE.user;
+  if (u.role === 'admin') return STATE.leads;
+  if (u.role === 'lider') return STATE.leads.filter(l=>l.equipo===u.team);
+  return STATE.leads.filter(l=>l.vendedor===u.id);
+}
+
+function vendedoresDe(team) {
+  return STATE.users.filter(u=>u.role==='vendedor'&&u.team===team);
+}
+
+async function api(action, data={}) {
+  if (!SCRIPT_URL || SCRIPT_URL.includes('PEGAR')) {
+    // MODO DEMO — sin backend
+    return demoApi(action, data);
+  }
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({action, ...data}),
+    });
+    return await res.json();
+  } catch(e) {
+    console.error('API error:', e);
+    return { error: e.toString() };
+  }
+}
+
+// MODO DEMO (datos en memoria cuando no hay Google Sheets conectado)
+let DEMO_LEADS = [
+  {id:'1',nombre:'María González',email:'maria.g@gmail.com',tel:'541155551234',origen:'check-in',equipo:'uy',vendedor:'uy-v1',stage:'contactado',habitacion:'suite',producto:'membresía',checkout:'22/03/2026',noches:4,budget:8500,tags:'hot',pais:'Argentina',unidad:'R4A',prod_orig:'Solanas Membership 21 noches',obs:'',interacted:true},
+  {id:'2',nombre:'Carlos Méndez',email:'cmendez@yahoo.com',tel:'541144445678',origen:'check-in',equipo:'uy',vendedor:'uy-v2',stage:'nuevo',habitacion:'estudio',producto:'',checkout:'23/03/2026',noches:3,budget:0,tags:'warm',pais:'Argentina',unidad:'EST108',prod_orig:'Solanas Membership 21 noches',obs:'',interacted:false},
+  {id:'3',nombre:'Laura Silva',email:'lsilva@outlook.com',tel:'541177779012',origen:'check-in',equipo:'uy',vendedor:'uy-v1',stage:'cierre',habitacion:'garden view',producto:'venta garden view',checkout:'24/03/2026',noches:4,budget:24000,tags:'hot',pais:'Argentina',unidad:'GV312',prod_orig:'Solanas Pasaporte',obs:'',interacted:true},
+  {id:'4',nombre:'Pablo Rodríguez',email:'pablo.r@gmail.com',tel:'59899887654',origen:'check-in',equipo:'uy',vendedor:'uy-v3',stage:'interesado',habitacion:'suite',producto:'venta green park',checkout:'27/03/2026',noches:7,budget:0,tags:'warm',pais:'Uruguay',unidad:'R4A501',prod_orig:'Solanas Membership',obs:'',interacted:true},
+  {id:'5',nombre:'Diego Torres',email:'dtorres@gmail.com',tel:'541166663311',origen:'referido',equipo:'uy',vendedor:'uy-v2',stage:'interesado',habitacion:'',producto:'venta garden view',checkout:'',noches:0,budget:18000,tags:'warm',pais:'Argentina',unidad:'',prod_orig:'',obs:'Referido por cliente existente',interacted:true},
+  {id:'6',nombre:'Valentina Cruz',email:'vcruz@gmail.com',tel:'541122228899',origen:'redes sociales',equipo:'uy',vendedor:'uy-v3',stage:'propuesta',habitacion:'',producto:'membresía',checkout:'',noches:0,budget:6000,tags:'warm',pais:'Argentina',unidad:'',prod_orig:'',obs:'',interacted:true},
+];
+let DEMO_NOTES = {};
+let DEMO_REMINDERS = [
+  {id:'r1',leadId:'1',leadName:'María González',texto:'Llamar a las 17hs para seguimiento',fecha:'Hoy 17:00',tipo:'llamada',done:false,vendedorId:'uy-v1'},
+  {id:'r2',leadId:'3',leadName:'Laura Silva',texto:'Seguimiento contrato — esperando firma',fecha:'Hoy 18:00',tipo:'seguimiento',done:false,vendedorId:'uy-v1'},
+  {id:'r3',leadId:'2',leadName:'Carlos Méndez',texto:'Primer contacto pendiente',fecha:'Vencido',tipo:'contacto',done:false,vendedorId:'uy-v2'},
+];
+const DEMO_USERS = [
+  {id:'admin',name:'Administrador',role:'admin',team:'ambos',color:'#712B13',bg:'#FAECE7'},
+  {id:'uy-lider',name:'Valentina Ríos',role:'lider',team:'uy',color:'#085041',bg:'#E1F5EE'},
+  {id:'uy-v1',name:'Mateo Suárez',role:'vendedor',team:'uy',color:'#0C447C',bg:'#E6F1FB'},
+  {id:'uy-v2',name:'Camila Núñez',role:'vendedor',team:'uy',color:'#534AB7',bg:'#EEEDFE'},
+  {id:'uy-v3',name:'Sebastián Lima',role:'vendedor',team:'uy',color:'#3B6D11',bg:'#EAF3DE'},
+  {id:'ar-lider',name:'Diego Herrera',role:'lider',team:'ar',color:'#993C1D',bg:'#FAECE7'},
+  {id:'ar-v1',name:'Lucía Morales',role:'vendedor',team:'ar',color:'#854F0B',bg:'#FAEEDA'},
+  {id:'ar-v2',name:'Nicolás Castro',role:'vendedor',team:'ar',color:'#72243E',bg:'#FBEAF0'},
+  {id:'ar-v3',name:'Florencia Paz',role:'vendedor',team:'ar',color:'#444441',bg:'#F1EFE8'},
+];
+function demoApi(action, data) {
+  if (action==='getUsers') return DEMO_USERS;
+  if (action==='getLeads') return [...DEMO_LEADS];
+  if (action==='getReminders') return [...DEMO_REMINDERS];
+  if (action==='saveLead') {
+    const lead = {...data, id: data.id || Date.now().toString(), creado: new Date().toISOString()};
+    DEMO_LEADS.push(lead); return {ok:true, id:lead.id};
+  }
+  if (action==='updateLead') {
+    const i = DEMO_LEADS.findIndex(l=>l.id===data.id);
+    if (i>=0) DEMO_LEADS[i] = {...DEMO_LEADS[i], ...data};
+    return {ok:true};
+  }
+  if (action==='addNote') {
+    if (!DEMO_NOTES[data.leadId]) DEMO_NOTES[data.leadId] = [];
+    DEMO_NOTES[data.leadId].unshift({id:Date.now().toString(),texto:data.texto,autor:data.autor,fecha:new Date().toLocaleString('es-AR')});
+    const i = DEMO_LEADS.findIndex(l=>l.id===data.leadId);
+    if (i>=0) DEMO_LEADS[i].interacted = true;
+    return {ok:true};
+  }
+  if (action==='saveReminder') {
+    DEMO_REMINDERS.push({...data, id:Date.now().toString(), done:false});
+    return {ok:true};
+  }
+  if (action==='doneReminder') {
+    const r = DEMO_REMINDERS.find(x=>x.id===data.id);
+    if (r) r.done = true; return {ok:true};
+  }
+  return {error:'Demo: acción no reconocida'};
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+async function init() {
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="loading"><div class="spinner"></div><div>Cargando Solanas CRM...</div></div>';
+  const users = await api('getUsers');
+  STATE.users = Array.isArray(users) ? users : [];
+  renderLogin();
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function renderLogin() {
+  const app = document.getElementById('app');
+  const teams = [{key:'admin',label:null}, {key:'uy',label:'Equipo Uruguay'}, {key:'ar',label:'Equipo Argentina'}];
+  let html = `<div class="login-wrap">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:22px;font-weight:700;color:#1a1a1a">Solanas CRM</div>
+      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">Punta del Este — Seleccioná tu perfil</div>
+    </div><div style="width:100%;max-width:360px">`;
+
+  // Admin
+  const adminU = STATE.users.find(u=>u.id==='admin');
+  if (adminU) {
+    html += `<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9b9b9b;margin-bottom:8px;font-weight:600">Administración</div>`;
+    html += loginCard(adminU);
+  }
+  // Equipos
+  ['uy','ar'].forEach(team => {
+    const teamUsers = STATE.users.filter(u=>u.team===team);
+    if (!teamUsers.length) return;
+    html += `<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9b9b9b;margin:14px 0 8px;font-weight:600">Equipo ${team==='uy'?'Uruguay':'Argentina'}</div>`;
+    teamUsers.forEach(u => html += loginCard(u));
+  });
+  html += `</div></div>`;
+  app.innerHTML = html;
+}
+
+function loginCard(u) {
+  const roleLabel = u.role==='admin'?'Admin':u.role==='lider'?'Líder de equipo':'Vendedor/a';
+  const roleClass = u.role==='admin'?'pill-admin':u.role==='lider'?'pill-lider':'pill-vend';
+  return `<div class="login-card" onclick="doLogin('${u.id}')">
+    <div class="avatar" style="background:${u.bg};color:${u.color}">${ini(u.name)}</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1a1a1a">${u.name}</div>
+    <div style="font-size:11px;color:#6b6b6b">${roleLabel}</div></div>
+    <span class="pill ${roleClass}">${roleLabel}</span>
+  </div>`;
+}
+
+async function doLogin(uid) {
+  STATE.user = uObj(uid);
+  STATE.view = 'dash';
+  STATE.loading = true;
+  renderApp();
+  // Cargar datos
+  const [leads, reminders] = await Promise.all([api('getLeads'), api('getReminders')]);
+  STATE.leads = Array.isArray(leads) ? leads : [];
+  STATE.reminders = Array.isArray(reminders) ? reminders : [];
+  STATE.loading = false;
+  renderApp();
+}
+
+function doLogout() { STATE.user = null; STATE.leads = []; renderLogin(); }
+function go(v) { STATE.view=v; STATE.selected=null; STATE.activeChat=null; STATE.editTpl=null; renderApp(); }
+
+// ── RENDER APP ───────────────────────────────────────────────
+function renderApp() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="app">
+      ${buildSidebar()}
+      <div class="main">
+        ${buildTopbar()}
+        <div class="content" id="content"></div>
+      </div>
+    </div>`;
+  renderContent();
+}
+
+function buildSidebar() {
+  const u = STATE.user;
+  const isAdmin = u.role==='admin', isLider = u.role==='lider';
+  const remUrgent = STATE.reminders.filter(r=>!r.done&&(r.urgencia==='overdue'||r.urgencia==='today'||r.fecha==='Vencido'||r.fecha?.startsWith('Hoy'))).length;
+  const pend = STATE.pendingApprovals.length;
+  return `<div class="sidebar">
+    <div class="logo"><div class="logo-t">Solanas CRM</div><div class="logo-s">Punta del Este</div></div>
+    <div class="user-blk" onclick="doLogout()">
+      <div class="avatar" style="width:28px;height:28px;font-size:11px;background:${u.bg};color:${u.color}">${ini(u.name)}</div>
+      <div><div style="font-size:11px;font-weight:600;color:#1a1a1a">${u.name}</div>
+      <div style="font-size:10px;color:#6b6b6b">${u.role==='admin'?'Admin':u.role==='lider'?'Líder':'Vendedor'} · salir</div></div>
+    </div>
+    <div class="nav-sec">CRM</div>
+    ${navItem('dash','M1 1h5v5H1zM8 1h5v5H8zM1 8h5v5H1zM8 8h5v5H8z','Dashboard')}
+    ${navItem('pipeline','M1 3h12M3 7h8M5 11h4','Pipeline')}
+    ${navItem('leads','M7 1a3 3 0 100 6 3 3 0 000-6zM1 13c0-3.3 2.7-6 6-6s6 2.7 6 6','Todos los leads')}
+    ${(isAdmin||isLider)?`<div class="nav-sec">Equipo</div>
+    ${navItem('equipo','M4 4a2 2 0 100 4 2 2 0 000-4zM10 4a2 2 0 100 4 2 2 0 000-4zM1 12c0-2.2 1.8-4 4-4M7 12c0-2.2 1.8-4 4-4s4 1.8 4 4',isAdmin?'Todos los equipos':'Vista del equipo')}
+    ${navItem('reasignar','M2 7h10M8 3l4 4-4 4','Reasignar leads')}`:''}
+    <div class="nav-sec">Comunicaciones</div>
+    ${navItemBadge('mensajes','M2 2h10a1 1 0 011 1v6a1 1 0 01-1 1H5L2 13V3a1 1 0 011-1z','Mensajes',pend)}
+    ${navItem('plantillas','M1 1h12v2H1zM1 5h8v2H1zM1 9h6v2H1z','Plantillas')}
+    ${navItemBadge('automatizaciones','M7 1v3M7 10v3M1 7h3M10 7h3M3 3l2 2M9 9l2 2M3 11l2-2M9 5l2-2','Automatizaciones',pend)}
+    <div class="nav-sec">Agenda</div>
+    ${navItemBadge('recordatorios','M7 2a5 5 0 100 10A5 5 0 007 2zM7 4v3l2 2','Recordatorios',remUrgent)}
+    <div class="nav-sec">Acciones</div>
+    ${navItem('nuevo_lead','M7 1a6 6 0 100 12A6 6 0 007 1zM7 4v6M4 7h6','Nuevo lead')}
+    ${navItem('importar','M7 1v8M3 6l4 4 4-4M1 11v1a1 1 0 001 1h10a1 1 0 001-1v-1','Importar leads')}
+  </div>`;
+}
+
+function navItem(view, path, label) {
+  return `<div class="nav-i ${STATE.view===view?'active':''}" onclick="go('${view}')">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;opacity:.6"><path d="${path}"/></svg>${label}</div>`;
+}
+function navItemBadge(view, path, label, count) {
+  return `<div class="nav-i ${STATE.view===view?'active':''}" onclick="go('${view}')">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;opacity:.6"><path d="${path}"/></svg>${label}
+    ${count>0?`<span class="nav-badge">${count}</span>`:''}
+  </div>`;
+}
+
+function buildTopbar() {
+  const u = STATE.user;
+  const titles = {dash:'Dashboard',pipeline:'Pipeline de ventas',leads:'Todos los leads',equipo:u.role==='admin'?'Todos los equipos':'Vista del equipo',reasignar:'Reasignar leads',mensajes:'Mensajes',plantillas:'Plantillas',automatizaciones:'Automatizaciones',recordatorios:'Recordatorios',nuevo_lead:'Nuevo lead',importar:'Importar leads',nuevo_recordatorio:'Nuevo recordatorio',nueva_plantilla:'Nueva plantilla',detalle:'Ficha del lead'};
+  const rClass = u.role==='admin'?'pill-admin':u.role==='lider'?'pill-lider':'pill-vend';
+  const rLabel = u.role==='admin'?'Admin':u.role==='lider'?'Líder':'Vendedor';
+  const title  = STATE.selected ? 'Ficha del lead' : (titles[STATE.view]||'');
+  return `<div class="topbar">
+    <div class="topbar-t">${title}</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      ${u.role!=='admin'?`<span class="pill ${u.team==='uy'?'pill-uy':'pill-ar'}">${u.team==='uy'?'Uruguay':'Argentina'}</span>`:''}
+      <span class="pill ${rClass}">${rLabel}</span>
+      ${!STATE.selected&&STATE.view!=='nuevo_lead'&&STATE.view!=='nueva_plantilla'&&STATE.view!=='nuevo_recordatorio'?
+        `<button class="btn btn-p" onclick="go('nuevo_lead')">+ Nuevo lead</button>`:''}
+    </div>
+  </div>`;
+}
+
+function renderContent() {
+  const c = $('content'); if (!c) return;
+  if (STATE.loading) { c.innerHTML = '<div class="loading"><div class="spinner"></div><div>Cargando datos...</div></div>'; return; }
+  if (STATE.selected) { renderDetalle(c); return; }
+  const views = {dash:renderDash,pipeline:renderPipeline,leads:renderLeadsList,equipo:renderEquipo,reasignar:renderReasignar,mensajes:renderMensajes,plantillas:renderPlantillas,automatizaciones:renderAutomatizaciones,recordatorios:renderRecordatorios,nuevo_lead:renderNuevoLead,importar:renderImportar,nuevo_recordatorio:renderNuevoRecordatorio,nueva_plantilla:renderNuevaTpl};
+  (views[STATE.view]||renderDash)(c);
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function renderDash(c) {
+  const ml = myLeads();
+  const ventas = ml.filter(l=>l.stage==='venta');
+  const rev    = ventas.reduce((a,l)=>a+(parseFloat(l.budget)||0),0);
+  const cierres = ml.filter(l=>l.stage==='cierre').length;
+  const remPend = STATE.reminders.filter(r=>!r.done).length;
+  const pend    = STATE.pendingApprovals.length;
+  const isAdmin = STATE.user.role==='admin';
+
+  c.innerHTML = `
+  <div class="metrics-g">
+    <div class="mc"><div class="mc-l">${isAdmin?'Leads totales':'Mis leads'}</div><div class="mc-v">${ml.length}</div></div>
+    <div class="mc"><div class="mc-l">Cierres pendientes</div><div class="mc-v">${cierres}</div></div>
+    <div class="mc"><div class="mc-l">Ventas cerradas</div><div class="mc-v">${ventas.length}</div><div class="mc-s">USD ${rev.toLocaleString('es-AR')}</div></div>
+    <div class="mc"><div class="mc-l">Recordatorios</div><div class="mc-v" style="color:${remPend>0?'#E24B4A':'inherit'}">${remPend}</div></div>
+  </div>
+  ${pend>0?`<div class="alert-banner" style="background:#FAEEDA;border:1px solid #EF9F27;color:#633806">
+    <b>${pend} mensaje${pend>1?'s':''} automático${pend>1?'s':''}</b> esperan tu aprobación.
+    <button class="btn" style="margin-left:10px;font-size:11px;border-color:#EF9F27;color:#633806" onclick="go('automatizaciones')">Revisar ahora</button>
+  </div>`:''}
+  <div class="two-col" style="margin-bottom:14px">
+    <div class="card">
+      <div class="card-t">Estados activos</div>
+      ${Object.entries(STAGES).map(([k,s])=>{const cnt=ml.filter(l=>l.stage===k).length;if(!cnt)return'';return`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #e0dfd8;font-size:12px">
+        <span style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:${s.color};display:inline-block"></span>${s.label}</span>
+        <span style="font-weight:700;color:${s.color}">${cnt}</span></div>`;}).join('')}
+    </div>
+    <div class="card">
+      <div class="card-t">Leads recientes</div>
+      ${ml.slice(0,6).map(l=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #e0dfd8;cursor:pointer;font-size:12px" onclick="openLead('${l.id}')">
+        <span style="font-weight:600;color:#1a1a1a">${l.nombre}</span>
+        <span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${S(l.stage).bg};color:${S(l.stage).color};font-weight:600">${S(l.stage).label}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+  ${isAdmin?`<div class="card">
+    <div class="card-t">Rendimiento por vendedor</div>
+    ${['uy','ar'].map(team=>`<div style="margin-bottom:12px">
+      <span class="pill ${team==='uy'?'pill-uy':'pill-ar'}" style="margin-bottom:8px;display:inline-flex">${team==='uy'?'Uruguay':'Argentina'}</span>
+      ${vendedoresDe(team).map(u=>{
+        const ul=STATE.leads.filter(l=>l.vendedor===u.id);
+        return`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e0dfd8;font-size:12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="avatar" style="width:24px;height:24px;font-size:9px;background:${u.bg};color:${u.color}">${ini(u.name)}</div>
+            <span>${u.name}</span>
+          </div>
+          <div style="display:flex;gap:14px;font-size:12px">
+            <span><b>${ul.length}</b> <span style="color:#9b9b9b">leads</span></span>
+            <span><b>${ul.filter(l=>l.stage==='venta').length}</b> <span style="color:#085041">ventas</span></span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`).join('')}
+  </div>`:''}`;
+}
+
+// ── PIPELINE ─────────────────────────────────────────────────
+function renderPipeline(c) { buildPipeline(c, myLeads()); }
+function renderLeadsList(c) { buildPipeline(c, STATE.leads); }
+
+function buildPipeline(c, leads) {
+  c.innerHTML = `<div class="pipe-wrap"><div class="pipeline">` +
+    Object.entries(STAGES).map(([k,s])=>{
+      const cols = leads.filter(l=>l.stage===k);
+      return `<div class="s-col">
+        <div class="s-hdr" style="background:${s.bg};border:1px solid ${s.color}30">
+          <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:${s.color}">${s.label}</span>
+          <span style="font-size:11px;font-weight:700;color:${s.color}">${cols.length}</span>
+        </div>
+        ${cols.map(l=>leadCard(l)).join('')}
+      </div>`;
+    }).join('') + `</div></div>`;
+  c.querySelectorAll('.lcard').forEach(card => {
+    card.addEventListener('click', ()=>openLead(card.dataset.id));
+  });
+}
+
+function leadCard(l) {
+  const showV = STATE.user.role!=='vendedor';
+  const v = uObj(l.vendedor);
+  return `<div class="lcard" data-id="${l.id}">
+    <div class="lc-name">${l.nombre}</div>
+    <div class="lc-sub">${l.habitacion||l.origen||''}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:5px">
+      ${l.habitacion?`<span class="tag tag-hab">${l.habitacion}</span>`:''}
+      ${l.producto?`<span class="tag tag-prod" style="font-size:8px">${l.producto}</span>`:''}
+      ${(l.tags||'').split(',').filter(Boolean).map(t=>`<span class="tag tag-${t.trim()}">${t.trim()}</span>`).join('')}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <span class="pill ${l.equipo==='uy'?'pill-uy':'pill-ar'}" style="font-size:9px">${l.equipo==='uy'?'UY':'AR'}</span>
+      <div style="display:flex;align-items:center;gap:5px">
+        ${showV&&v?`<div class="avatar" style="width:18px;height:18px;font-size:8px;background:${v.bg};color:${v.color}">${ini(v.name)}</div>`:''}
+        <span style="font-size:9px;color:#9b9b9b">${l.budget>0?'USD '+Number(l.budget).toLocaleString('es-AR'):l.checkout||''}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openLead(id) { STATE.selected=id; renderApp(); }
+
+// ── DETALLE DE LEAD ──────────────────────────────────────────
+function renderDetalle(c) {
+  const l = STATE.leads.find(x=>x.id===STATE.selected);
+  if (!l) { STATE.selected=null; renderApp(); return; }
+  const s = S(l.stage);
+  const v = uObj(l.vendedor);
+  const notes = STATE.notes[l.id] || DEMO_NOTES[l.id] || [];
+  const isLider = STATE.user.role==='lider';
+  const isAdmin  = STATE.user.role==='admin';
+  const canReasign = isAdmin||isLider;
+  const vOpts = isAdmin ? STATE.users.filter(u=>u.role==='vendedor'&&u.team===l.equipo) : vendedoresDe(l.equipo);
+
+  c.innerHTML = `<div style="max-width:860px">
+  <div class="back" onclick="STATE.selected=null;renderApp()">← volver</div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    <div class="avatar" style="width:44px;height:44px;font-size:14px;background:${l.equipo==='uy'?'#E1F5EE':'#E6F1FB'};color:${l.equipo==='uy'?'#085041':'#0C447C'}">${ini(l.nombre)}</div>
+    <div>
+      <div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:4px">${l.nombre}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+        <span class="pill ${l.equipo==='uy'?'pill-uy':'pill-ar'}">${l.equipo==='uy'?'Equipo Uruguay':'Equipo Argentina'}</span>
+        <span style="font-size:10px;padding:2px 7px;border-radius:3px;background:${s.bg};color:${s.color};font-weight:600">${s.label}</span>
+        <span class="tag tag-orig">${l.origen||''}</span>
+        ${v?`<span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#6b6b6b">
+          <div class="avatar" style="width:16px;height:16px;font-size:8px;background:${v.bg};color:${v.color}">${ini(v.name)}</div>${v.name}</span>`:''}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-t">Estado de la venta</div>
+    <div class="stage-btns">
+      ${Object.entries(STAGES).map(([k,s])=>`<button class="sb ${l.stage===k?'on':''}" style="${l.stage===k?`background:${s.color};border-color:${s.color};color:#fff`:''}" onclick="setStage('${l.id}','${k}')">${s.label}</button>`).join('')}
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card">
+      <div class="card-t">Datos de contacto</div>
+      <div class="irow"><span class="il">Teléfono</span><span class="iv">+${l.tel||'—'}</span></div>
+      <div class="irow"><span class="il">Email</span><span class="iv">${l.email||'—'}</span></div>
+      <div class="irow"><span class="il">Nacionalidad</span><span class="iv">${l.pais||'—'}</span></div>
+      ${l.unidad?`<div class="irow"><span class="il">Unidad</span><span class="iv">${l.unidad}</span></div>`:''}
+      ${l.checkout?`<div class="irow"><span class="il">Check-out</span><span class="iv">${l.checkout}</span></div>`:''}
+      ${l.noches>0?`<div class="irow"><span class="il">Noches</span><span class="iv">${l.noches}</span></div>`:''}
+      <div class="irow"><span class="il">Presupuesto</span><span class="iv">${l.budget>0?'USD '+Number(l.budget).toLocaleString('es-AR'):'—'}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-t">Producto y asignación</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;color:#6b6b6b;margin-bottom:5px">Tipo de habitación</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${HABITACIONES.map(h=>`<span style="font-size:10px;padding:3px 8px;border-radius:20px;cursor:pointer;font-weight:600;background:${l.habitacion===h?'#27500A':'#f5f5f0'};color:${l.habitacion===h?'#EAF3DE':'#6b6b6b'};border:1px solid ${l.habitacion===h?'#27500A':'#e0dfd8'}" onclick="setHab('${l.id}','${h}')">${h}</span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;color:#6b6b6b;margin-bottom:5px">Producto ofrecido</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${PRODUCTOS.map(p=>`<span style="font-size:10px;padding:3px 8px;border-radius:20px;cursor:pointer;font-weight:600;background:${l.producto===p?'#3C3489':'#f5f5f0'};color:${l.producto===p?'#EEEDFE':'#6b6b6b'};border:1px solid ${l.producto===p?'#3C3489':'#e0dfd8'}" onclick="setProd('${l.id}','${p}')">${p}</span>`).join('')}
+        </div>
+      </div>
+      ${canReasign?`<div>
+        <div style="font-size:10px;color:#6b6b6b;margin-bottom:5px">Vendedor asignado</div>
+        <select class="sel" style="width:100%;font-size:12px;padding:6px 8px" onchange="reasignar('${l.id}',this.value)">
+          ${vOpts.map(u=>`<option value="${u.id}" ${l.vendedor===u.id?'selected':''}>${u.name}</option>`).join('')}
+        </select>
+      </div>`:''}
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-t">Notas e interacciones</div>
+    ${notes.length>0?notes.map(n=>`<div class="tl-item">
+      <div class="tl-dot"></div>
+      <div><div style="color:#1a1a1a;line-height:1.5">${n.texto}</div>
+      <div style="font-size:10px;color:#9b9b9b;margin-top:1px">${n.autor||''} · ${n.fecha||''}</div></div>
+    </div>`).join(''):'<div style="font-size:12px;color:#9b9b9b;margin-bottom:8px">Sin notas todavía</div>'}
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <textarea class="note-in" id="note-inp" rows="2" placeholder="Agregar nota, resultado de llamada..."></textarea>
+      <button class="btn btn-p" onclick="addNote('${l.id}')">Guardar</button>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-wa" onclick="openWA('${l.id}')">Abrir WhatsApp</button>
+    ${l.email?`<button class="btn btn-mail" onclick="openMailLead('${l.id}')">Enviar email</button>`:''}
+    <button class="btn" onclick="STATE.activeChat='${l.id}';go('mensajes')">Ver conversación</button>
+  </div>
+  </div>`;
+}
+
+// ── MENSAJES ─────────────────────────────────────────────────
+function renderMensajes(c) {
+  const ml = myLeads();
+  const activeId = STATE.activeChat;
+  const conv = activeId ? (STATE.conversations[activeId]||[]) : [];
+  const lead = activeId ? STATE.leads.find(l=>l.id===activeId) : null;
+
+  c.innerHTML = `<div class="chat-wrap">
+    <div class="chat-sidebar">
+      <div style="padding:10px;border-bottom:1px solid #e0dfd8;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b6b6b">Contactos</div>
+      ${ml.map(l=>`<div class="contact-item ${activeId===l.id?'active':''}" onclick="STATE.activeChat='${l.id}';renderApp()">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="avatar" style="width:28px;height:28px;font-size:10px;background:#E1F5EE;color:#085041">${ini(l.nombre)}</div>
+          <div style="min-width:0">
+            <div style="font-size:11px;font-weight:600;color:#1a1a1a">${l.nombre}</div>
+            <div style="font-size:10px;color:#9b9b9b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.origen||''}</div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="chat-main">
+      ${lead?`
+      <div class="chat-hdr">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="avatar" style="width:32px;height:32px;font-size:11px;background:#E1F5EE;color:#085041">${ini(lead.nombre)}</div>
+          <div><div style="font-size:13px;font-weight:600">${lead.nombre}</div>
+          <div style="font-size:10px;color:#6b6b6b">${lead.tel||''}</div></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-wa" onclick="openWA('${lead.id}')">WhatsApp</button>
+          <button class="btn btn-mail" onclick="openMailLead('${lead.id}')">Email</button>
+        </div>
+      </div>
+      <div class="chat-msgs" id="chat-msgs">
+        ${conv.length===0?`<div style="text-align:center;color:#9b9b9b;font-size:12px;margin-top:30px">Sin mensajes todavía</div>`:''}
+        ${conv.map(m=>`<div style="display:flex;flex-direction:column;align-items:${m.dir==='in'?'flex-start':'flex-end'}">
+          <div class="bubble ${m.dir==='in'?'b-in':m.canal==='wa'?'b-wa':'b-mail'}">
+            ${m.text}
+            <div class="b-time">${m.canal==='wa'?'WhatsApp':'Email'} · ${m.time}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="chat-inp-wrap">
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+          <div style="display:flex;gap:5px">
+            <select id="canal-sel" class="sel"><option value="wa">WhatsApp</option><option value="mail">Email</option></select>
+            <select id="tpl-sel" class="sel" style="flex:1" onchange="loadTplInChat('${lead.id}')">
+              <option value="">— Escribir mensaje —</option>
+              ${STATE.templates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}
+            </select>
+          </div>
+          <textarea class="note-in" id="msg-inp" rows="2" placeholder="Escribí tu mensaje..."></textarea>
+        </div>
+        <button class="btn btn-p" onclick="sendMsg('${lead.id}')">Enviar</button>
+      </div>`:`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9b9b9b;font-size:13px">
+        Seleccioná un contacto para ver la conversación
+      </div>`}
+    </div>
+  </div>`;
+}
+
+// ── PLANTILLAS ───────────────────────────────────────────────
+function renderPlantillas(c) {
+  c.innerHTML = `
+  <div class="tpl-grid">
+    ${STATE.templates.map(t=>`<div class="tpl-card">
+      <span style="display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;margin-bottom:8px;background:${t.type==='wa'?'#E1F5EE':'#E6F1FB'};color:${t.type==='wa'?'#085041':'#0C447C'}">${t.type==='wa'?'WhatsApp':'Email'}</span>
+      <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:5px">${t.name}</div>
+      <div class="tpl-preview">${t.body.replace(/{{(\w+)}}/g,'<span class="var-tag">{{$1}}</span>')}</div>
+      <div style="font-size:10px;color:#9b9b9b;margin-bottom:8px">Estado: <b>${S(t.stage).label}</b></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn" style="font-size:10px" onclick="editTpl('${t.id}')">Editar</button>
+        <button class="btn btn-danger" style="font-size:10px" onclick="deleteTpl('${t.id}')">Eliminar</button>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div style="margin-top:12px;padding:10px;background:#f5f5f0;border-radius:8px;font-size:11px;color:#6b6b6b">
+    Variables: <span class="var-tag">{{nombre}}</span> <span class="var-tag">{{vendedor}}</span> <span class="var-tag">{{habitacion}}</span> <span class="var-tag">{{producto}}</span> — se reemplazan automáticamente.
+  </div>`;
+}
+
+function renderNuevaTpl(c) {
+  const t = STATE.editTpl ? STATE.templates.find(x=>x.id===STATE.editTpl) : null;
+  c.innerHTML = `<div style="max-width:560px;display:flex;flex-direction:column;gap:12px">
+    <div class="back" onclick="STATE.editTpl=null;go('plantillas')">← volver</div>
+    <div class="field"><label>Nombre</label><input id="tp-name" value="${t?t.name:''}" placeholder="Nombre de la plantilla"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><label>Canal</label><select id="tp-type"><option value="wa" ${t?.type==='wa'?'selected':''}>WhatsApp</option><option value="mail" ${t?.type==='mail'?'selected':''}>Email</option></select></div>
+      <div class="field"><label>Estado que la activa</label><select id="tp-stage">${Object.entries(STAGES).map(([k,s])=>`<option value="${k}" ${t?.stage===k?'selected':''}>${s.label}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Contenido</label><textarea id="tp-body" rows="6" style="font-size:12px;padding:8px;border:1px solid #c8c7c0;border-radius:8px;background:#f5f5f0;color:#1a1a1a;font-family:inherit;resize:vertical">${t?t.body:''}</textarea></div>
+    <div style="padding:9px;background:#f5f5f0;border-radius:8px;font-size:11px;color:#6b6b6b">Variables: <span class="var-tag">{{nombre}}</span> <span class="var-tag">{{vendedor}}</span> <span class="var-tag">{{habitacion}}</span> <span class="var-tag">{{producto}}</span></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="STATE.editTpl=null;go('plantillas')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveTpl()">Guardar plantilla</button>
+    </div>
+  </div>`;
+}
+
+// ── AUTOMATIZACIONES ─────────────────────────────────────────
+function renderAutomatizaciones(c) {
+  c.innerHTML = `
+  ${STATE.pendingApprovals.length>0?`<div style="margin-bottom:16px">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#854F0B;margin-bottom:8px">Mensajes esperando aprobación</div>
+    ${STATE.pendingApprovals.map(p=>`<div class="pending-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:600">${p.leadName} — <span style="font-size:10px;padding:1px 5px;border-radius:3px;background:${p.canal==='wa'?'#E1F5EE':'#E6F1FB'};color:${p.canal==='wa'?'#085041':'#0C447C'};font-weight:600">${p.canal==='wa'?'WhatsApp':'Email'}</span></span>
+        <span style="font-size:10px;color:#9b9b9b">${p.time}</span>
+      </div>
+      <div style="font-size:11px;background:#fff;padding:8px;border-radius:6px;margin-bottom:8px;white-space:pre-wrap;line-height:1.5">${p.msg}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-p" style="font-size:11px" onclick="approveMsg('${p.id}')">Aprobar y enviar</button>
+        <button class="btn" style="font-size:11px" onclick="editPending('${p.id}')">Editar antes de enviar</button>
+        <button class="btn btn-danger" style="font-size:11px" onclick="rejectMsg('${p.id}')">Rechazar</button>
+      </div>
+    </div>`).join('')}
+  </div>`:''}
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b6b6b;margin-bottom:8px">Reglas de automatización</div>
+  ${STATE.automations.map(a=>`<div class="auto-item">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+      <div><div style="font-size:13px;font-weight:600;color:#1a1a1a">${a.name}</div>
+      <div style="font-size:10px;color:#9b9b9b;margin-top:2px">${a.desc}</div></div>
+      <div class="toggle ${a.on?'on':'off'}" onclick="toggleAuto('${a.id}')"><div class="toggle-dot"></div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6b6b6b;margin-bottom:4px">
+      <span style="background:#f5f5f0;padding:2px 7px;border-radius:4px">Cuando: ${a.trigger}</span>
+      <span>→</span>
+      <span style="background:${a.canal==='wa'?'#E1F5EE':'#E6F1FB'};color:${a.canal==='wa'?'#085041':'#0C447C'};font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600">${a.canal==='wa'?'WA':'Mail'}</span>
+    </div>
+    <div style="font-size:11px">
+      ${a.aprobacion?`<span style="background:#FAEEDA;color:#633806;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;margin-right:5px">Requiere aprobación</span>`:`<span style="background:#E1F5EE;color:#085041;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;margin-right:5px">Automático</span>`}
+      ${a.action}
+    </div>
+  </div>`).join('')}`;
+}
+
+// ── RECORDATORIOS ────────────────────────────────────────────
+function renderRecordatorios(c) {
+  const activos = STATE.reminders.filter(r=>!r.done);
+  const hechos  = STATE.reminders.filter(r=>r.done);
+  const urgencia = r => r.fecha==='Vencido'?'overdue':r.fecha?.startsWith('Hoy')?'today':'normal';
+  c.innerHTML = `
+  ${activos.length===0?`<div style="padding:30px;text-align:center;color:#9b9b9b;font-size:13px">Sin recordatorios pendientes</div>`:''}
+  ${activos.map(r=>`<div class="rem-item ${urgencia(r)}">
+    <div style="width:28px;height:28px;border-radius:50%;background:${urgencia(r)==='overdue'?'#FCEBEB':urgencia(r)==='today'?'#FAEEDA':'#EAF3DE'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px">
+      ${r.tipo==='llamada'?'📞':r.tipo==='mail'?'✉️':'⏰'}
+    </div>
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:600;color:#1a1a1a">${r.leadName}</div>
+      <div style="font-size:11px;color:#6b6b6b">${r.texto}</div>
+      <div style="font-size:10px;margin-top:2px;color:${urgencia(r)==='overdue'?'#E24B4A':urgencia(r)==='today'?'#854F0B':'#9b9b9b'}">${r.fecha}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <button class="btn" style="font-size:10px" onclick="doneReminder('${r.id}')">Hecho</button>
+      <button class="btn btn-danger" style="font-size:10px" onclick="deleteReminder('${r.id}')">Borrar</button>
+    </div>
+  </div>`).join('')}
+  ${hechos.length>0?`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9b9b9b;margin:14px 0 8px">Completados</div>
+  ${hechos.map(r=>`<div class="rem-item done"><div style="font-size:12px;font-weight:600;color:#1a1a1a">${r.leadName}</div><div style="font-size:11px;color:#9b9b9b">${r.texto}</div></div>`).join('')}`:''}`;
+}
+
+function renderNuevoRecordatorio(c) {
+  const ml = myLeads();
+  c.innerHTML = `<div style="max-width:480px;display:flex;flex-direction:column;gap:12px">
+    <div class="back" onclick="go('recordatorios')">← volver</div>
+    <div class="field"><label>Lead</label><select id="r-lead">${ml.map(l=>`<option value="${l.id}">${l.nombre}</option>`).join('')}</select></div>
+    <div class="field"><label>Recordatorio</label><input id="r-text" placeholder="Ej: Llamar para seguimiento de propuesta"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><label>Fecha y hora</label><input type="datetime-local" id="r-fecha"></div>
+      <div class="field"><label>Tipo</label><select id="r-tipo"><option value="llamada">Llamada</option><option value="mail">Email</option><option value="wa">WhatsApp</option><option value="seguimiento">Seguimiento</option></select></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="go('recordatorios')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveReminder()">Guardar</button>
+    </div>
+  </div>`;
+  const fi=$('r-fecha'); if(fi){const n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());fi.value=n.toISOString().slice(0,16);}
+}
+
+// ── EQUIPO ───────────────────────────────────────────────────
+function renderEquipo(c) {
+  const isAdmin = STATE.user.role==='admin';
+  const teams = isAdmin ? ['uy','ar'] : [STATE.user.team];
+  c.innerHTML = teams.map(team=>`
+    <div style="margin-bottom:18px">
+      ${isAdmin?`<span class="pill ${team==='uy'?'pill-uy':'pill-ar'}" style="margin-bottom:10px;display:inline-flex;font-size:13px;padding:4px 12px">${team==='uy'?'Equipo Uruguay':'Equipo Argentina'}</span>`:''}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        ${vendedoresDe(team).map(u=>{
+          const ul = STATE.leads.filter(l=>l.vendedor===u.id);
+          return `<div class="card">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+              <div class="avatar" style="width:34px;height:34px;font-size:12px;background:${u.bg};color:${u.color}">${ini(u.name)}</div>
+              <div><div style="font-size:13px;font-weight:600;color:#1a1a1a">${u.name}</div>
+              <div style="font-size:10px;color:#6b6b6b">${ul.length} leads</div></div>
+            </div>
+            ${Object.entries(STAGES).slice(0,6).map(([k,s])=>{const cnt=ul.filter(l=>l.stage===k).length;if(!cnt)return'';return`<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #e0dfd8"><span style="color:#6b6b6b">${s.label}</span><span style="font-weight:700;color:${s.color}">${cnt}</span></div>`;}).join('')}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── REASIGNAR ────────────────────────────────────────────────
+function renderReasignar(c) {
+  const isAdmin = STATE.user.role==='admin';
+  const tLeads  = isAdmin ? STATE.leads : STATE.leads.filter(l=>l.team===STATE.user.team||l.equipo===STATE.user.team);
+  c.innerHTML = `<div class="card">
+    <div class="card-t">Reasignar leads</div>
+    <table class="tbl">
+      <thead><tr><th>Lead</th><th>Origen</th><th>Estado</th><th>Asignar a</th></tr></thead>
+      <tbody>${tLeads.map(l=>{
+        const v = uObj(l.vendedor);
+        const opts = STATE.users.filter(u=>u.role==='vendedor'&&u.team===l.equipo);
+        return`<tr>
+          <td style="cursor:pointer;font-weight:600" onclick="openLead('${l.id}')">${l.nombre}</td>
+          <td style="font-size:11px;color:#6b6b6b">${l.origen||''}</td>
+          <td><span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${S(l.stage).bg};color:${S(l.stage).color};font-weight:600">${S(l.stage).label}</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              ${v?`<div class="avatar" style="width:22px;height:22px;font-size:9px;background:${v.bg};color:${v.color}">${ini(v.name)}</div>`:''}
+              <select class="sel" onchange="reasignar('${l.id}',this.value)">
+                ${opts.map(u=>`<option value="${u.id}" ${l.vendedor===u.id?'selected':''}>${u.name}</option>`).join('')}
+              </select>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+// ── NUEVO LEAD ───────────────────────────────────────────────
+function renderNuevoLead(c) {
+  const isAdmin = STATE.user.role==='admin';
+  const allVend = STATE.users.filter(u=>u.role==='vendedor');
+  c.innerHTML = `<div class="form-g">
+    <div class="field"><label>Nombre completo</label><input id="f-name" placeholder="Juan Pérez"></div>
+    <div class="field"><label>Teléfono</label><input id="f-tel" placeholder="+54 9 11 ..."></div>
+    <div class="field"><label>Email</label><input type="email" id="f-email" placeholder="email@ejemplo.com"></div>
+    <div class="field"><label>Nacionalidad</label><select id="f-pais"><option>Argentina</option><option>Uruguay</option><option>Brasil</option><option>Chile</option><option>Paraguay</option><option>Otro</option></select></div>
+    <div class="field"><label>Origen</label><select id="f-origen">${ORIGENES.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>
+    ${isAdmin?`<div class="field"><label>Equipo</label><select id="f-equipo"><option value="uy">Uruguay</option><option value="ar">Argentina</option></select></div>`:'<div></div>'}
+    <div class="field"><label>Habitación (si aplica)</label><input id="f-room" placeholder="Suite 204"></div>
+    <div class="field"><label>Tipo de habitación</label><select id="f-hab"><option value="">— No aplica —</option>${HABITACIONES.map(h=>`<option value="${h}">${h}</option>`).join('')}</select></div>
+    <div class="field"><label>Producto de interés</label><select id="f-prod"><option value="">— Sin definir —</option>${PRODUCTOS.map(p=>`<option value="${p}">${p}</option>`).join('')}</select></div>
+    <div class="field"><label>Check-out estimado</label><input type="date" id="f-checkout"></div>
+    <div class="field"><label>Presupuesto (USD)</label><input type="number" id="f-budget" placeholder="0"></div>
+    <div class="field"><label>Temperatura</label><select id="f-tag"><option value="warm">Warm</option><option value="hot">Hot</option><option value="cold">Cold</option></select></div>
+    <div class="field full"><label>Asignar a vendedor</label>
+      <select id="f-vend">${allVend.map(u=>`<option value="${u.id}">${u.name} (${u.team.toUpperCase()})</option>`).join('')}</select>
+    </div>
+    <div class="full" style="background:#E1F5EE;border:1px solid #1D9E75;border-radius:8px;padding:10px 14px;font-size:12px;color:#085041;line-height:1.6">
+      Los leads de <b>check-in</b> se asignan a <b>Uruguay</b>. Pasan a Argentina solo si hubo <b>checkout sin interacciones</b>.
+    </div>
+    <div class="full" style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="go('pipeline')">Cancelar</button>
+      <button class="btn btn-p" onclick="guardarNuevoLead()">Registrar lead</button>
+    </div>
+  </div>`;
+}
+
+// ── IMPORTAR ─────────────────────────────────────────────────
+function renderImportar(c) {
+  c.innerHTML = `<div style="max-width:560px">
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-t">Importar leads desde archivo</div>
+      <p style="font-size:12px;color:#6b6b6b;margin-bottom:14px;line-height:1.6">Pegá el contenido de tu planilla de Excel o arrastrá un archivo CSV. El sistema detecta automáticamente los campos.</p>
+      <div style="border:2px dashed #e0dfd8;border-radius:8px;padding:30px;text-align:center;margin-bottom:14px;cursor:pointer;color:#9b9b9b;font-size:13px" onclick="$('file-inp').click()">
+        Arrastrá un archivo o hacé clic para seleccionar<br>
+        <span style="font-size:11px">.xlsx, .csv</span>
+        <input type="file" id="file-inp" accept=".xlsx,.csv" style="display:none" onchange="handleFileImport(this)">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-t">Próximamente — conexión automática</div>
+      <div style="font-size:12px;color:#6b6b6b;line-height:1.7">
+        <b>Sistema de reservas:</b> Cuando el desarrollador conecte la API, los check-ins del día entrarán automáticamente al CRM en tiempo real.<br><br>
+        <b>Meta Lead Ads:</b> Los leads de campañas de Facebook e Instagram entrarán directamente sin necesidad de exportar archivos.
+      </div>
+    </div>
+  </div>`;
+}
+
+function handleFileImport(input) {
+  alert('Función de importación disponible en la versión con backend conectado. Por ahora usá "Nuevo lead" para cargar manualmente.');
+}
+
+// ── ACCIONES ─────────────────────────────────────────────────
+async function setStage(id, stage) {
+  const l = STATE.leads.find(x=>x.id===id);
+  if (!l) return;
+  l.stage = stage;
+  if (stage!=='nuevo') l.interacted = true;
+  await api('updateLead', {id, stage, interacted:l.interacted});
+  renderApp();
+}
+
+async function setHab(id, hab) {
+  const l = STATE.leads.find(x=>x.id===id);
+  if (!l) return;
+  l.habitacion = hab;
+  await api('updateLead', {id, habitacion:hab});
+  renderApp();
+}
+
+async function setProd(id, prod) {
+  const l = STATE.leads.find(x=>x.id===id);
+  if (!l) return;
+  l.producto = l.producto===prod ? '' : prod;
+  await api('updateLead', {id, producto:l.producto});
+  renderApp();
+}
+
+async function reasignar(lid, vid) {
+  const l = STATE.leads.find(x=>x.id===lid);
+  const v = uObj(vid);
+  if (!l||!v) return;
+  l.vendedor = vid;
+  l.equipo = v.team;
+  await api('updateLead', {id:lid, vendedor:vid, equipo:v.team});
+  await api('addNote', {leadId:lid, texto:`Lead reasignado a ${v.name} por ${STATE.user.name}.`, autor:STATE.user.name});
+  renderApp();
+}
+
+async function addNote(id) {
+  const inp = $('note-inp');
+  const text = inp?.value?.trim();
+  if (!text) return;
+  if (!STATE.notes[id]) STATE.notes[id] = [];
+  if (!DEMO_NOTES[id]) DEMO_NOTES[id] = [];
+  const nota = {id:Date.now().toString(), texto:text, autor:STATE.user.name, fecha:new Date().toLocaleString('es-AR')};
+  STATE.notes[id].unshift(nota);
+  DEMO_NOTES[id].unshift(nota);
+  const l = STATE.leads.find(x=>x.id===id);
+  if (l) l.interacted = true;
+  await api('addNote', {leadId:id, texto:text, autor:STATE.user.name});
+  renderApp();
+}
+
+async function saveReminder() {
+  const leadId = $('r-lead')?.value;
+  const texto  = $('r-text')?.value?.trim();
+  if (!texto) { alert('Ingresá el texto del recordatorio.'); return; }
+  const lead  = STATE.leads.find(l=>l.id===leadId);
+  const fecha = $('r-fecha')?.value||'';
+  const tipo  = $('r-tipo')?.value||'seguimiento';
+  const dt    = fecha ? new Date(fecha) : new Date();
+  const now   = new Date();
+  const diff  = dt-now;
+  const urgencia = diff<0?'overdue':diff<86400000?'today':'normal';
+  const fechaLabel = urgencia==='overdue'?'Vencido':dt.toLocaleDateString('es-AR',{weekday:'short',hour:'2-digit',minute:'2-digit'});
+  const rem = {id:Date.now().toString(),leadId,leadName:lead?.nombre||'Lead',texto,fecha:fechaLabel,tipo,done:false,vendedorId:STATE.user.id,urgencia};
+  STATE.reminders.push(rem);
+  await api('saveReminder', rem);
+  go('recordatorios');
+}
+
+async function doneReminder(id) {
+  const r = STATE.reminders.find(x=>x.id===id);
+  if (r) r.done = true;
+  await api('doneReminder', {id});
+  renderApp();
+}
+
+function deleteReminder(id) {
+  STATE.reminders = STATE.reminders.filter(x=>x.id!==id);
+  renderApp();
+}
+
+async function guardarNuevoLead() {
+  const nombre = $('f-name')?.value?.trim();
+  if (!nombre) { alert('Ingresá el nombre del lead.'); return; }
+  const origen = $('f-origen')?.value||'check-in';
+  const equipo = $('f-equipo')?.value || (origen==='check-in'?'uy': STATE.user.team||'ar');
+  const vendId = $('f-vend')?.value || STATE.user.id;
+  const lead = {
+    id: Date.now().toString(),
+    nombre,
+    email:$('f-email')?.value||'',
+    tel:$('f-tel')?.value||'',
+    origen,equipo,vendedor:vendId,
+    stage:'nuevo',
+    habitacion:$('f-hab')?.value||'',
+    producto:$('f-prod')?.value||'',
+    checkout:$('f-checkout')?.value||'',
+    noches:0,
+    budget:parseInt($('f-budget')?.value)||0,
+    tags:$('f-tag')?.value||'warm',
+    pais:$('f-pais')?.value||'Argentina',
+    unidad:'',prod_orig:'',obs:'',interacted:false,
+  };
+  STATE.leads.push(lead);
+  await api('saveLead', lead);
+  await api('addNote',{leadId:lead.id,texto:`Lead registrado por ${STATE.user.name}. Origen: ${origen}.`,autor:STATE.user.name});
+  go('pipeline');
+}
+
+function editTpl(id) { STATE.editTpl=id; go('nueva_plantilla'); }
+function deleteTpl(id) { STATE.templates=STATE.templates.filter(t=>t.id!==id); renderApp(); }
+
+function saveTpl() {
+  const name = $('tp-name')?.value?.trim();
+  const body = $('tp-body')?.value?.trim();
+  if (!name||!body) { alert('Completá nombre y contenido.'); return; }
+  const type  = $('tp-type')?.value||'wa';
+  const stage = $('tp-stage')?.value||'nuevo';
+  if (STATE.editTpl) {
+    const t = STATE.templates.find(x=>x.id===STATE.editTpl);
+    if (t) { t.name=name; t.body=body; t.type=type; t.stage=stage; }
+  } else {
+    STATE.templates.push({id:'t'+Date.now(),name,type,body,stage});
+  }
+  STATE.editTpl=null; go('plantillas');
+}
+
+function toggleAuto(id) {
+  const a = STATE.automations.find(x=>x.id===id);
+  if (a) a.on=!a.on;
+  renderApp();
+}
+
+function approveMsg(id) {
+  const p = STATE.pendingApprovals.find(x=>x.id===id);
+  if (!p) return;
+  if (!STATE.conversations[p.leadId]) STATE.conversations[p.leadId]=[];
+  const now = new Date();
+  STATE.conversations[p.leadId].push({dir:'out',text:p.msg,time:now.getHours()+':'+String(now.getMinutes()).padStart(2,'0'),canal:p.canal});
+  STATE.pendingApprovals = STATE.pendingApprovals.filter(x=>x.id!==id);
+  renderApp();
+}
+function rejectMsg(id) { STATE.pendingApprovals=STATE.pendingApprovals.filter(x=>x.id!==id); renderApp(); }
+function editPending(id) {
+  const p = STATE.pendingApprovals.find(x=>x.id===id);
+  if (!p) return;
+  STATE.activeChat=p.leadId;
+  STATE.pendingApprovals=STATE.pendingApprovals.filter(x=>x.id!==id);
+  go('mensajes');
+  setTimeout(()=>{const i=$('msg-inp');if(i)i.value=p.msg;},100);
+}
+
+function loadTplInChat(leadId) {
+  const sel = $('tpl-sel');
+  const inp = $('msg-inp');
+  if (!sel||!inp) return;
+  const tpl = STATE.templates.find(t=>t.id===sel.value);
+  const lead = STATE.leads.find(l=>l.id===leadId);
+  if (!tpl||!lead) { inp.value=''; return; }
+  const v = uObj(STATE.user.id);
+  inp.value = tpl.body
+    .replace(/{{nombre}}/g,lead.nombre.split(' ')[0])
+    .replace(/{{vendedor}}/g,v?.name||STATE.user.name)
+    .replace(/{{habitacion}}/g,lead.habitacion||lead.unidad||'')
+    .replace(/{{producto}}/g,lead.producto||'nuestros productos');
+}
+
+function sendMsg(leadId) {
+  const inp = $('msg-inp');
+  const canal = $('canal-sel')?.value||'wa';
+  if (!inp||!inp.value.trim()) return;
+  if (!STATE.conversations[leadId]) STATE.conversations[leadId]=[];
+  const now = new Date();
+  STATE.conversations[leadId].push({dir:'out',text:inp.value.trim(),time:now.getHours()+':'+String(now.getMinutes()).padStart(2,'0'),canal});
+  inp.value='';
+  renderApp();
+}
+
+function openWA(id) {
+  const l = STATE.leads.find(x=>x.id===id);
+  if (l) window.open('https://wa.me/'+(l.tel||'').replace(/\D/g,''),'_blank');
+}
+function openMailLead(id) {
+  const l = STATE.leads.find(x=>x.id===id);
+  if (l&&l.email) window.open(`mailto:${l.email}?subject=Solanas Punta del Este`,'_blank');
+}
+
+// ── START ────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
